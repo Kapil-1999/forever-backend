@@ -46,11 +46,15 @@ const AddProduct = async (req, res) => {
 
 const productList = async (req, res) => {
     try {
-
+        const product = await productModel.find({});
+        res.status(200).json({
+            success : true,
+            product
+        })
     } catch (error) {
         console.log(error);
         return res.status(500).json({
-            message: 'Internal Server error',
+            message: error.message,
             success: false
         })
     }
@@ -58,11 +62,33 @@ const productList = async (req, res) => {
 
 const removeProduct = async (req, res) => {
     try {
+        const { id } = req.params;
+        
+        if (!id) {
+            return res.status(400).json({
+                success: false,
+                message: 'Product ID is required'
+            });
+        }
+
+        const deletedProduct = await productModel.findByIdAndDelete(id);
+        
+        if (!deletedProduct) {
+            return res.status(404).json({
+                success: false,
+                message: 'Product not found'
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Product deleted successfully'
+        });
 
     } catch (error) {
-        console.log(error);
+        console.error('Error deleting product:', error);
         return res.status(500).json({
-            message: 'Internal Server error',
+            message: error.message,
             success: false
         })
     }
@@ -70,11 +96,32 @@ const removeProduct = async (req, res) => {
 
 const signleProduct = async (req, res) => {
     try {
+        const { id } = req.params;
+       if (!id) {
+            return res.status(400).json({
+                success: false,
+                message: 'Product ID is required'
+            });
+        } 
+        const signleData = await productModel.findById(id);
+        if(!signleData) {
+            return res.status(404).json({
+                success: false,
+                message: 'Product Not found'
+            });
+        }
+        else {
+            return res.status(200).json({
+                success : true,
+                data : signleData
+            })
+        }
+        
 
     } catch (error) {
         console.log(error);
         return res.status(500).json({
-            message: 'Internal Server error',
+            message: error.message,
             success: false
         })
     }
